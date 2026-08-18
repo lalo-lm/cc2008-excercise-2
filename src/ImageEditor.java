@@ -1,5 +1,6 @@
 public class ImageEditor {
     private Image og;
+    public int average;
 
     public ImageEditor(Image og) {
         this.og = og;
@@ -20,7 +21,12 @@ public class ImageEditor {
         for (int row = 0; row < og.getHeight(); row++) {
             for (int col = 0; col < og.getWidth(); col++) {
                 // apply pixel transform here
+                Pixel p = og.getPixel(row,col);
+                int r = 255 - p.r;
+                int g = 255 - p.g;
+                int b = 255 - p.b;
                 // assign pixel to `transformed` image
+                transformed.setPixel(row, col, new Pixel(r, g, b));
             }
         }
 
@@ -38,7 +44,20 @@ public class ImageEditor {
     * Use the same double loop as negative().
     */
     public Image grayscale() {
-        return null;
+        Image transformed = new Image(og.getHeight(), og.getWidth());
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                // apply pixel transform here
+                Pixel p = og.getPixel(row,col);
+                int r = p.r;
+                int g = p.g;
+                int b = p.b;
+                int average = (r + g + b) / 3;
+                // assign pixel to `transformed` image
+                transformed.setPixel(row, col, new Pixel(average, average, average));
+            }
+        }
+        return transformed;
     }
 
     /**
@@ -54,7 +73,33 @@ public class ImageEditor {
     * @param channel 0 = red, 1 = green, 2 = blue
     */
     public Image keepOnlyChannel(int channel) {
-        return null;
+        Image transformed = new Image(og.getHeight(), og.getWidth());
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                // apply pixel transform here
+                Pixel p = og.getPixel(row,col);
+                int r = 0;
+                int g = 0;
+                int b = 0;
+
+                if (channel == 0) {
+                    r = p.r;
+                } 
+                
+                else if (channel == 1) {
+                    g = p.g;
+                }
+
+                else if (channel == 2) {
+                    b = p.b;
+                }
+                // assign pixel to `transformed` image
+                transformed.setPixel(row, col, new Pixel(r, g, b));
+            }
+        }
+
+        return transformed;
     }
 
     /**
@@ -71,7 +116,47 @@ public class ImageEditor {
     * clamping and compare. You should be able to explain the difference.
     */
     public Image brightness(int amount) {
-        return null;
+        Image transformed = new Image(og.getHeight(), og.getWidth());
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                // apply pixel transform here
+                Pixel p = og.getPixel(row,col);
+                int r = p.r + amount;
+                int g = p.g + amount;
+                int b = p.b + amount;
+
+                if (r > 255) {
+                    r = 255;
+                } 
+
+                if (g > 255) {
+                    g = 255;
+                } 
+                    
+                if (b > 255) {
+                    b = 255;
+                }
+             
+
+                if (r < 0) {
+                    r = 0;
+                }
+
+                if (g < 0) {
+                    g = 0;
+                }
+
+                if (b < 0) {
+                    b = 0;
+                }
+            
+                // assign pixel to `transformed` image
+                transformed.setPixel(row, col, new Pixel(r, g, b));
+            }
+        }
+
+        return transformed;
     }
 
     /**
@@ -86,7 +171,34 @@ public class ImageEditor {
     * @param limit a value between 0 and 255
     */
     public Image blackAndWhite(int limit) {
-        return null;
+        Image transformed = new Image(og.getHeight(), og.getWidth());
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                // apply pixel transform here
+                Pixel p = og.getPixel(row,col);
+                int r = p.r;
+                int g = p.g;
+                int b = p.b;
+                int average = (r + g + b) / 3;
+
+                if (average > limit) {
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                }
+                
+                else {
+                    r = 0;
+                    g = 0;
+                    b = 0;
+                }
+                // assign pixel to `transformed` image
+                transformed.setPixel(row, col, new Pixel(r, g, b));
+            }
+        }
+
+        return transformed;
     }
 
     // ---------------------------------------------------------------
@@ -110,7 +222,31 @@ public class ImageEditor {
     * values directly inside the original array using the full width?
     */
     public Image mirrorHorizontal() {
-        return null;
+        int[][][] result = new int[og.getHeight()][og.getWidth()][3];
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                Pixel p = og.getPixel(row, col);
+                int mirroredRow = og.getHeight() - 1 - row;
+
+                result[mirroredRow][col][0] = p.r;
+                result[mirroredRow][col][1] = p.g;
+                result[mirroredRow][col][2] = p.b;
+            }
+        }
+
+        Image transformed = new Image(og.getHeight(), og.getWidth());
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                transformed.setPixel(row, col, new Pixel(
+                    result[row][col][0],
+                    result[row][col][1],
+                    result[row][col][2]
+                ));
+            }
+        }
+
+        return transformed;
     }
 
     /**
@@ -128,7 +264,32 @@ public class ImageEditor {
     * otherwise every method you call afterwards will break.
     */
     public Image rotate90() {
-        return null;
+        int[][][] rotated = new int[og.getWidth()][og.getHeight()][3];
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                Pixel p = og.getPixel(row, col);
+                int newRow = col;
+                int newCol = og.getHeight() - 1 - row;
+
+                rotated[newRow][newCol][0] = p.r;
+                rotated[newRow][newCol][1] = p.g;
+                rotated[newRow][newCol][2] = p.b;
+            }
+        }
+
+        Image transformed = new Image(og.getWidth(), og.getHeight());
+        for (int row = 0; row < og.getWidth(); row++) {
+            for (int col = 0; col < og.getHeight(); col++) {
+                transformed.setPixel(row, col, new Pixel(
+                    rotated[row][col][0],
+                    rotated[row][col][1],
+                    rotated[row][col][2]
+                ));
+            }
+        }
+
+        return transformed;
     }
 
     // ---------------------------------------------------------------
@@ -147,7 +308,54 @@ public class ImageEditor {
     * Ignore the pixels on the border of the image (start your loops at 1
     * and stop at height - 1 and width - 1). Copy the border unchanged.
     */
-    public void blur() {
-        // TODO: optional
+    public Image blur() {
+        Image originalCopy = new Image(og.getHeight(), og.getWidth());
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                originalCopy.setPixel(row, col, og.getPixel(row, col));
+            }
+        }
+
+        Image blurred = new Image(og.getHeight(), og.getWidth());
+
+        for (int row = 0; row < og.getHeight(); row++) {
+            for (int col = 0; col < og.getWidth(); col++) {
+                if (row == 0 || row == og.getHeight() - 1 || col == 0 || col == og.getWidth() - 1) {
+                    blurred.setPixel(row, col, originalCopy.getPixel(row, col));
+                    continue;
+                }
+
+                int totalR = 0;
+                int totalG = 0;
+                int totalB = 0;
+                int count = 0;
+
+                for (int rowOffset = -5; rowOffset <= 5; rowOffset++) {
+                    for (int colOffset = -5; colOffset <= 5; colOffset++) {
+                        int sampleRow = row + rowOffset;
+                        int sampleCol = col + colOffset;
+
+                        if (sampleRow < 0 || sampleRow >= og.getHeight() || sampleCol < 0 || sampleCol >= og.getWidth()) {
+                            continue;
+                        }
+
+                        Pixel p = originalCopy.getPixel(sampleRow, sampleCol);
+                        totalR += p.r;
+                        totalG += p.g;
+                        totalB += p.b;
+                        count++;
+                    }
+                }
+
+                int avgR = totalR / count;
+                int avgG = totalG / count;
+                int avgB = totalB / count;
+
+                blurred.setPixel(row, col, new Pixel(avgR, avgG, avgB));
+            }
+        }
+
+        return blurred;
     }
 }
