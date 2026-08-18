@@ -1,13 +1,13 @@
 ============================================================================
 
-### COMANDOS DE COMPILACIÓN Y EJECUCIÓN - EDITOR DE FILTROS DE IMÁGENES
+## COMANDOS DE COMPILACIÓN Y EJECUCIÓN - EDITOR DE FILTROS DE IMÁGENES
 
 ============================================================================
 
 javac -d bin src/*.java
 
 ------------------------------------------------------------------------
-#### 2. Comandos de ejecución para generar cada imagen filtrada
+### 2. Comandos de ejecución para generar cada imagen filtrada
 ------------------------------------------------------------------------
 
 java -cp bin Main data/input.png data/grayscale.png grises
